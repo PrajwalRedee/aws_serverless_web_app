@@ -26,7 +26,7 @@ It provides **secure user authentication**, **API-based backend**, and **scalabl
 
 ## 📂 Project Structure
 
-![Project Structure](image.png)
+![Project Structure](image-5.png)
 
 ---
 
