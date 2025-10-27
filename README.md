@@ -1,91 +1,208 @@
-# AWS Serverless Web Application — Notes App  
+# AWS Serverless Web Application — Notes App
 
-This project demonstrates a **fully serverless web application** built on AWS using **Terraform**.  
-It provides **secure user authentication**, **API-based backend**, and **scalable data storage**, all without managing servers.
+![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)
+![Serverless](https://img.shields.io/badge/Serverless-Enabled-success?style=for-the-badge)
+![DynamoDB](https://img.shields.io/badge/DynamoDB-%2300f.svg?style=for-the-badge&logo=amazondynamodb&logoColor=white)
+
+> A fully **serverless web application** on AWS, built using **Terraform**.  
+> It provides secure user authentication (Cognito), API-based backend (Lambda + API Gateway), and scalable NoSQL data storage (DynamoDB), all served via S3 and CloudFront.
 
 ---
 
-## Project Overview
+## Table of Contents
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Technologies Used](#technologies-used)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Setup Instructions](#setup-instructions)
+- [Screenshots](#screenshots)
+- [Contact](#contact)
 
-| Service | Purpose |
-|----------|----------|
-| **Amazon S3 + CloudFront** | Host and serve the frontend web app |
-| **Amazon Cognito** | Manage user authentication (Sign-up / Login / Logout) |
-| **Amazon API Gateway** | Expose RESTful APIs for the backend |
-| **AWS Lambda** | Serverless compute to handle CRUD operations |
-| **Amazon DynamoDB** | NoSQL database to store user notes |
-| **Amazon CloudWatch** | Logging and monitoring |
-| **Terraform** | Infrastructure as Code for automated deployment |
+---
+
+## Overview
+This project demonstrates a **modern, serverless web application** built on AWS using **Terraform (IaC)**.  
+It is designed to be **scalable, cost-efficient, and secure**, showcasing a complete full-stack serverless architecture — from frontend to backend with authentication.
 
 ---
 
 ## Architecture
+![AWS Serverless Architecture](screenshots/architecture.png)
 
-![AWS Architecture Diagram](image-4.png)
----
-
-## 📂 Project Structure
-
-![Project Structure](image-5.png)
-
----
-
-## ⚙️ Features
-
-- **User Authentication** using AWS Cognito Hosted UI (Sign Up / Login / Logout)
-- **Frontend Hosting** on S3, served securely via CloudFront
-- **Serverless Backend** using AWS Lambda + API Gateway (with JWT Authorization)
-- **Database Layer** built on DynamoDB for scalable storage
-- **API-Driven Architecture** (Create, Read, Update, Delete notes)
-- **IAM Role-Based Access** for secure service-to-service interaction
-- **Terraform Automation** — deploy full infrastructure in minutes
+### Workflow
+```
+CloudFront + S3 → Cognito Authentication → API Gateway → Lambda → DynamoDB
+```
 
 ---
 
-## Step-by-Step Setup Instructions
+## Technologies Used
 
-1️⃣ Initialize Terraform
+| Category | Tool | Description |
+|-----------|------|-------------|
+| IaC | Terraform | v1.9+ for provisioning AWS resources |
+| Authentication | Amazon Cognito | Secure user login & signup |
+| API Management | Amazon API Gateway | RESTful API endpoints |
+| Compute | AWS Lambda | Serverless function for CRUD logic |
+| Database | Amazon DynamoDB | Scalable NoSQL storage |
+| Frontend Hosting | Amazon S3 + CloudFront | Static web hosting + global CDN |
+| Monitoring | Amazon CloudWatch | Lambda & API logs |
+| Security | IAM Roles & Policies | Fine-grained access control |
 
-    cd terraform
-    terraform init
+---
 
-2️⃣ Plan Deployment
+## Features
+- **Completely Serverless Stack (No EC2, No manual servers)**
+- **Secure Authentication** via AWS Cognito (Sign-up, Login, Logout)
+- **CRUD Operations** handled by AWS Lambda using DynamoDB
+- **Frontend Hosting** on S3 with global delivery via CloudFront
+- **Fully Automated Deployment** using Terraform
+- **Pay-per-use Model** → zero idle cost
+- **Free-tier Eligible** for all components
 
-    terraform plan
+---
 
-3️⃣ Apply Infrastructure
+## Project Structure
+```
+AWS_SERVERLESS_WEB_APP/
+├── frontend/
+│   └── index.html.tpl
+├── lambda/
+│   ├── lambda_function.py
+│   └── function.zip
+├── main.tf
+├── outputs.tf
+├── variables.tf
+├── terraform.tfvars
+├── .gitignore
+└── screenshots/
+    ├── architecture.png
+    ├── login-page.png
+    ├── sign-up-page.png
+    └── notes-dashboard.png
+```
 
-    terraform apply -auto-approve
+---
 
-    This step:
+## Prerequisites
 
-      - Creates S3 bucket for frontend
-      - Deploys Lambda, API Gateway, DynamoDB
-      - Configures Cognito for authentication
-      - Generates CloudFront distribution URL
+### Required Tools
+- AWS Account with sufficient IAM privileges  
+- Terraform v1.9+ installed  
+  ```bash
+  terraform --version
+  ```
+- AWS CLI configured  
+  ```bash
+  aws configure
+  # Enter Access Key, Secret Key, Region (e.g., ap-south-1)
+  ```
+- Python 3.9+ installed (for Lambda packaging)
 
-4️⃣ Get the Outputs
+### IAM Permissions Required
 
-    terraform output
+| AWS Service | Required Permissions |
+|--------------|----------------------|
+| Lambda | Create/Update functions, attach roles |
+| API Gateway | Create APIs, routes, integrations |
+| Cognito | Create user pools, clients, domains |
+| DynamoDB | Create tables and manage records |
+| S3 | Create buckets and upload objects |
+| CloudFront | Create distributions |
+| CloudWatch | Create log groups and metrics |
 
-    You’ll see:
+---
 
-      - api_invoke_url — API Gateway endpoint
-      - s3_website_url — Frontend URL
-      - cognito_user_pool_id
-      - cognito_client_id
-      - cognito_domain
+## Setup Instructions
 
-5️⃣ Access the Web App
+### 1. Clone Repository
+```bash
+git clone https://github.com/PrajwalRedee/aws_serverless_web_app.git
+cd aws_serverless_web_app
+```
 
-    - Open the S3 website URL or CloudFront URL in your browser.
-    - Click Sign Up to create a user
-    - Login via Cognito Hosted UI
-    - Add, view, and manage notes — all through the API Gateway
+### 2. Configure Variables
+Edit **terraform.tfvars**:
+```hcl
+region               = "ap-south-1"
+cognito_domain_prefix = "notes-prajwal-demo-123"
+s3_bucket_prefix      = "notes-frontend"
+```
 
+> The Cognito domain prefix must be globally unique per region.
 
-## Sample Output
+### 3. Initialize Terraform
+```bash
+terraform init
+```
 
-![Login Page](image-1.png)
-![Sign up](image-2.png) 
-![Final Output](image-3.png)
+### 4. Review Plan
+```bash
+terraform plan
+```
+
+### 5. Apply Configuration
+```bash
+terraform apply -auto-approve
+```
+
+Terraform will:
+- Deploy DynamoDB, Lambda, API Gateway
+- Configure Cognito for authentication
+- Create S3 + CloudFront for frontend
+- Output all URLs for access
+
+### 6. View Outputs
+```bash
+terraform output
+```
+
+Sample Output:
+```
+api_invoke_url      = "https://abc123.execute-api.ap-south-1.amazonaws.com/dev"
+s3_website_url      = "https://notes-frontend-xyz.s3-website.ap-south-1.amazonaws.com"
+cognito_domain      = "notes-prajwal-demo-123.auth.ap-south-1.amazoncognito.com"
+```
+
+### 7. Access the Application
+Open the CloudFront or S3 website URL in your browser:
+
+1. Click **Sign Up** → Create a Cognito user  
+2. Click **Login** → Access the app  
+3. Add and manage notes (CRUD operations)  
+4. Notes are stored securely in DynamoDB
+
+### 8. Destroy Resources (to avoid costs)
+```bash
+terraform destroy -auto-approve
+```
+
+---
+
+## Screenshots
+
+### 🏗️ Architecture Diagram
+![Architecture Diagram](screenshots/architecture.png)
+
+### 🔐 Login Page
+![Login Page](screenshots/login-page.png)
+
+### 🧾 Sign-Up Page
+![Sign-Up Page](screenshots/sign-up-page.png)
+
+### 📝 Notes Dashboard
+![Notes Dashboard](screenshots/notes-dashboard.png)
+
+---
+
+## Contact
+**K Prajwal**  
+Associate DevOps Engineer | AWS & DevOps Enthusiast  
+
+📧 [prajwalredee@gmail.com](mailto:prajwalredee@gmail.com)  
+🔗 [linkedin.com/in/prajwalredee](https://www.linkedin.com/in/prajwalredee)  
+🐙 [github.com/PrajwalRedee](https://github.com/PrajwalRedee)  
+📍 Bangalore, India  
